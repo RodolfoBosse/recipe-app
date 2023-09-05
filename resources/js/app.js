@@ -20,7 +20,7 @@ import Ingredients from './components/ingredients/Ingredients.vue';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: RecipeList },
+        { path: '/recipes', component: RecipeList },
         { path: '/recipes/create', component: RecipeForm },
         { path: '/recipes/:id', component: Recipe },
         { path: '/recipes/:id/edit', component: RecipeForm },

@@ -1,14 +1,14 @@
 <template>
     <div>
-      <h2 v-if="isNewIngredient">Add Ingredient</h2>
-      <h2 v-else>Edit Ingredient</h2>
+      <h2 v-if="isNewIngredient">Adicionar Ingrediente</h2>
+      <h2 v-else>Editar Ingrediente</h2>
         <form @submit.prevent="submitForm">
           <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
+            <label for="name" class="form-label">Nome:</label>
             <input class="form-control" type="text" id="name" v-model="ingredient.name" required />
           </div>
-          <button type="submit" v-if="isNewIngredient" class="btn btn-primary">Add Ingredient</button>
-          <button type="submit" v-else class="btn btn-primary">Update Ingredient</button>
+          <button type="submit" v-if="isNewIngredient" class="btn btn-primary">Adicionar Ingrediente</button>
+          <button type="submit" v-else class="btn btn-primary">Atualizar Ingrediente</button>
         </form>
     </div>
   </template>
@@ -19,7 +19,7 @@
     data() {
       return {
         ingredient: {
-          name: ''
+          name: ""
         }
       }
     },
@@ -30,7 +30,8 @@
     },
     async created() {
       if (!this.isNewIngredient) {
-        const response = await axios.get(`/api/ingredients/${this.$route.params.id}`);
+        const response = await axios.get(
+          `/api/ingredients/${this.$route.params.id}`);
         this.ingredient = response.data;
       }
     },
@@ -42,7 +43,7 @@
           } else {
             await axios.put(`/api/ingredients/${this.$route.params.id}`, this.ingredient);
           }
-          this.$router.push('/');
+          this.$router.push('/ingredients');
         } catch (error) {
           console.error(error);
         }

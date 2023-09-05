@@ -21,7 +21,8 @@ class IngredientsController extends Controller
      */
     public function create()
     {
-        return view('ingredients.create');
+
+        //return view('ingredients.create');
     }
 
     /**
@@ -29,19 +30,21 @@ class IngredientsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'unique:ingredients,name|required|max:255',
-
+        $request->validate([
+            'name' => 'unique:ingredients,name|required|max:255'
         ]);
 
-        return Ingredients::create($request->all());
+        return Ingredients::create([
+            'name' => $request['name']
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Ingredients $ingredients)
+    public function show($id)
     {
+        $ingredients = Ingredients::find($id);
         return $ingredients;
     }
 
@@ -59,21 +62,23 @@ class IngredientsController extends Controller
     public function update(Request $request, Ingredients $ingredients)
     {
         $request->validate([
-            'name' => 'required'
+            'name' => 'required|string'
         ]);
-
-        $ingredients->update($request->all());
-    
+        $ingredients = Ingredients::find($request->id);
+        $ingredients->update([
+            'name' => $request->name
+        ]);
         return $ingredients;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Ingredients $ingredients)
+    public function destroy($id)
     {
+        $ingredients = Ingredients::find($id);
         $ingredients->delete();
         
-        return response()->json(['message' => 'Ingredient deleted successfully']);
+        return response()->json(['message' => 'Ingrediente excluído com sucesso']);
     }
 }

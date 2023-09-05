@@ -11,9 +11,4 @@ class Ingredients extends Model
     protected $fillable=[
         'name'
     ];
-
-    public function recipes()
-    {
-        return $this->belongsToMany('App\Models\Recipe')->withPivot('quantity');
-    }
 }

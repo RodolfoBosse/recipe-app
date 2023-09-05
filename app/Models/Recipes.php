@@ -10,12 +10,17 @@ class Recipes extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title'
+        'title',
+        'ingredients',
+        'quantity',
+        'ingredient_id'
     ];
 
-    public function ingredients()
-    {
-        return $this->belongsToMany('App\Models\Ingredient')->withPivot('quantity');
-    }
+    protected $casts = [
+        'title'=> 'string',
+        'ingredients' => 'array',
+        'quantity' => 'array',
+        'ingredient_id'=> 'array'
+    ];
 }
 

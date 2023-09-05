@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Recipes;
 use App\Models\Ingredients;
 use Illuminate\Http\Request;
+use PgSql\Result;
 
 class RecipesController extends Controller
 {
@@ -19,10 +20,9 @@ class RecipesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $ingredients_list = Ingredients::pluck('name')->toJson();
-        return view('recipes.create', compact('ingredients_list'));
+        //
     }
 
     /**
@@ -30,19 +30,21 @@ class RecipesController extends Controller
      */
     public function store(Request $request)
     {
-        $recipe = new Recipes;
+       
+       $recipes =  $request->validate([
+            'recipe' => 'required|array',
+            'recipe.*' => 'required|string|distinct',
+            'ingredients' => 'required|array',
+            'ingredients.*' => 'required|array',
+            'ingredients.*.*' => 'required|string|distinct'
+        ]);
 
-        $recipe->title = $request->title;
-
-        $recipe->save();
-        //$newrecipe = Recipe::find(['title' => $recipe->title]);
-        for ($i='0'; $i<is_countable($request->ingredients) && count($request->ingredients); ++$i){
-            $ingredients_id = Ingredients::firstorCreate(['name' => $request->ingredients[$i]])->id;
-
-            $quantity = $request->quantity[$i];
-            $recipe->ingredients()->attach($ingredients_id, ['quantity' => $quantity]);
-        }
-        return Recipes::create($request->all());
+        return Recipes::create([
+            'title' => $request['recipe.title'],
+            'ingredients' => $request->input('ingredients.*.ingredient'),
+            'quantity' => $request->input('ingredients.*.quantity'),
+            'ingredient_id' => $request->input('ingredient_id.*.id')
+        ]);
     }
 
     /**
@@ -50,8 +52,8 @@ class RecipesController extends Controller
      */
     public function show($id)
     {
-        $recipe = Recipes::with('ingredients')->findorFail($id);
-        return view('recipes.recipe', compact('recipe'));
+        $recipe = Recipes::find($id);
+        return $recipe;
     }
 
     /**
@@ -65,16 +67,36 @@ class RecipesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Recipes $recipes)
+    public function update(Request $request, Recipes $recipe)
     {
-        //
+        $request->validate([
+            'recipe' => 'required|array',
+            'recipe.title' => 'required|string|distinct',
+            'ingredients' => 'required|array',
+            'ingredients.*' => 'required|array',
+            'ingredients.*.ingredient' => 'required|string|distinct'
+        ]);
+
+        $recipe->update([
+            'title' => $request['recipe.title'],
+            'ingredients' => $request->input('ingredients.*.ingredient'),
+            'quantity' => $request->input('ingredients.*.quantity'),
+            'ingredient_id' => $request->input('ingredient_id.*')
+        ]);
+
+        
+        return $recipe;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Recipes $recipes)
+    public function destroy($id)
     {
-        //
+        $recipes = Recipes::find($id);
+        $recipes->delete();
+
+
+        return response()->json(['message' => 'Receita excluída com sucesso']);
     }
 }
