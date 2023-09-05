@@ -12,6 +12,7 @@
 
 2 - Confirmar se as dependências vue-router e vue-axios estão instaladas, se não instalar elas com:
         npm install vue-router vue-axios --save
+        
 3 - Migrar a base de dados com o seguinte comando:
         php artisan migrate
 
